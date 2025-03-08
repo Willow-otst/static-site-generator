@@ -1,5 +1,5 @@
 class HTMLNode:
-    def __init__(self, tag, value, children, props):
+    def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
         self.value = value
         self.children = children if children is not None else []
@@ -11,7 +11,7 @@ class HTMLNode:
 
     def props_to_html(self):
         # Convert the props dictionary into HTML attribute format
-        return ''.join([f' {key}="{value}"' for key, value in self.props.items()])
+        return "".join([f" {key}=\"{value}\"" for key, value in self.props.items()])
 
     def __repr__(self):
         # Return a string representation of the HTMLNode
