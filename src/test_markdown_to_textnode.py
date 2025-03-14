@@ -1,6 +1,7 @@
 import unittest
-from markdown_to_textnode import markdown_to_textnode, image_to_textnode, link_to_textnode
-
+from markdown_to_textnode import (
+    markdown_to_textnode, image_to_textnode, link_to_textnode, text_to_textnodes
+)
 from textnode import TextNode, TextType
 
 
@@ -144,6 +145,26 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" with text that follows", TextType.NORMAL),
             ],
             new_nodes,
+        )
+
+    def test_text_to_textnodes(self):
+        nodes = text_to_textnodes(
+            "This is **text** with an _italic_ word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        )
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.NORMAL),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.NORMAL),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.NORMAL),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.NORMAL),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and a ", TextType.NORMAL),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            nodes,
         )
 
 if __name__ == "__main__":

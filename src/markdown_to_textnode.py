@@ -1,6 +1,15 @@
 from textnode import TextNode, TextType
 from markdown_extraction_processor import extract_markdown_images, extract_markdown_links
 
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.NORMAL)]
+    nodes = markdown_to_textnode(nodes, "**", TextType.BOLD)
+    nodes = markdown_to_textnode(nodes, "_", TextType.ITALIC)
+    nodes = markdown_to_textnode(nodes, "`", TextType.CODE)
+    nodes = image_to_textnode(nodes)
+    nodes = link_to_textnode(nodes)
+    return nodes
+
 def markdown_to_textnode(old_nodes, delimiter, text_type):
     new_nodes = []
     for old_node in old_nodes:
