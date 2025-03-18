@@ -4,7 +4,10 @@ from textnode import TextNode, TextType
 from markdown_to_textnode import markdown_to_textnode
 
 def main():
+    print("===| Phase 1: Cleaning |===")
     CleanDir("public")
+
+    print("\n===| Phase 2: Copying |===")
     CopyNewContent("static", "public")
 
 def CleanDir(dir_path):
