@@ -1,7 +1,7 @@
 import os
 import shutil
 from textnode import TextNode, TextType
-from markdown_to_textnode import markdown_to_textnode
+from markdown_to_blocks import markdown_to_html_node
 
 def main():
     print("===| Phase 1: Cleaning |===")
@@ -9,6 +9,57 @@ def main():
 
     print("\n===| Phase 2: Copying |===")
     CopyNewContent("static", "public")
+
+    print("\n===| Phase 3: Generating Pages |===")
+    generate_pages_recursive('content', 'template.html', 'public')
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    # Walk through the content directory
+    for root, dirs, files in os.walk(dir_path_content):
+        for file in files:
+            if file.endswith('.md'):  # Process only markdown files
+                markdown_file = os.path.join(root, file)
+
+                # Generate the corresponding HTML file path
+                relative_path = os.path.relpath(markdown_file, start=dir_path_content)
+                dest_file_path = os.path.join(dest_dir_path, os.path.splitext(relative_path)[0] + '.html')
+
+                # Generate the page using the generate_page function
+                generate_page(markdown_file, template_path, dest_file_path)
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    
+    # Read markdown content
+    with open(from_path, 'r') as f:
+        markdown_content = f.read()
+    
+    # Convert markdown to HTML
+    html_content = markdown_to_html_node(markdown_content).to_html()
+    
+    # Extract title from markdown
+    title = extract_title(markdown_content)
+    
+    # Read the template file
+    with open(template_path, 'r') as f:
+        template_content = f.read()
+    
+    # Replace placeholders with title and content
+    page_content = template_content.replace('{{ Title }}', title).replace('{{ Content }}', html_content)
+    
+    # Ensure the destination directory exists
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    
+    # Write the generated page to the destination file
+    with open(dest_path, 'w') as f:
+        f.write(page_content)
+
+def extract_title(markdown):
+    lines = markdown.splitlines()
+    for line in lines:
+        if line.startswith('# '):
+            return line[2:].strip()
+    raise ValueError("No H1 header found in the markdown.")
 
 def CleanDir(dir_path):
     if not os.path.exists(dir_path):
