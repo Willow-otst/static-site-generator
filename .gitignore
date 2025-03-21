@@ -2,4 +2,4 @@ public/
 __pycache__/
 *.sh
 #static/
-content/
+#content/
