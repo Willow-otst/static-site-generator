@@ -1,5 +1,5 @@
 public/
 __pycache__/
 *.sh
-static/
+#static/
 content/

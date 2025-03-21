@@ -1,19 +1,28 @@
 import os
+import sys
 import shutil
 from textnode import TextNode, TextType
 from markdown_to_blocks import markdown_to_html_node
 
 def main():
+
+    # public = "public" # for local build
+    public = "docs" # for github build
+
+    basepath = sys.argv[1] if len(sys.argv) > 1 else '/'
+
+    print(f"Using basepath: {basepath}")
+
     print("===| Phase 1: Cleaning |===")
-    CleanDir("public")
+    CleanDir(public)
 
     print("\n===| Phase 2: Copying |===")
-    CopyNewContent("static", "public")
+    CopyNewContent("static", public)
 
     print("\n===| Phase 3: Generating Pages |===")
-    generate_pages_recursive('content', 'template.html', 'public')
+    generate_pages_recursive('content', 'template.html', public)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     # Walk through the content directory
     for root, dirs, files in os.walk(dir_path_content):
         for file in files:
@@ -25,9 +34,9 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 dest_file_path = os.path.join(dest_dir_path, os.path.splitext(relative_path)[0] + '.html')
 
                 # Generate the page using the generate_page function
-                generate_page(markdown_file, template_path, dest_file_path)
+                generate_page(markdown_file, template_path, dest_file_path, basepath)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     
     # Read markdown content
@@ -47,6 +56,10 @@ def generate_page(from_path, template_path, dest_path):
     # Replace placeholders with title and content
     page_content = template_content.replace('{{ Title }}', title).replace('{{ Content }}', html_content)
     
+    # Replace href="/ and src="/ with href="{basepath} and src="{basepath}
+    page_content = page_content.replace('href="/', f'href="{basepath}')
+    page_content = page_content.replace('src="/', f'src="{basepath}')
+
     # Ensure the destination directory exists
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     
