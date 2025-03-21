@@ -20,7 +20,7 @@ def main():
     CopyNewContent("static", public)
 
     print("\n===| Phase 3: Generating Pages |===")
-    generate_pages_recursive('content', 'template.html', public)
+    generate_pages_recursive('content', 'template.html', public, basepath)
 
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     # Walk through the content directory
